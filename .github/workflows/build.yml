@@ -23,8 +23,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-key: ${{ hashFiles('Transkription/package-lock.json') }}
-          cache-restore-keys: node-modules-
+          cache-dependency-path: Transkription/package-lock.json
 
       - name: Android SDK einrichten
         uses: android-actions/setup-android@v3
