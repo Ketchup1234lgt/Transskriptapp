@@ -1,4 +1,4 @@
-name: Transkription APK bauen
+name: Transkription Base-APK bauen
 
 on:
   workflow_dispatch:
@@ -33,6 +33,10 @@ jobs:
           sdkmanager "ndk;26.1.10909125" "cmake;3.22.1"
           echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
 
+      - name: Modell auf Base (q5, ~57 MB) umstellen
+        run: |
+          sed -i 's|ggml-medium-q5_0.bin|ggml-base-q5_1.bin|g' Transkription/App.tsx
+
       - name: Pakete installieren
         run: |
           cd Transkription
@@ -49,6 +53,6 @@ jobs:
       - name: APK als Download bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: Transkription-Medium-APK
+          name: Transkription-Base-APK
           path: Transkription/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
