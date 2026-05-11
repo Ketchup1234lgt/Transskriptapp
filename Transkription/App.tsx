@@ -94,6 +94,8 @@ export default function App() {
       setTranscript('');
       setStatus('Konvertiere Audio...');
 
+      await AudioConverter.startTranscriptionService();
+
       wavPath = RNFS.CachesDirectoryPath + '/whisper_' + Date.now() + '.wav';
       await AudioConverter.convertToWav(filePath, wavPath);
 
@@ -111,6 +113,7 @@ export default function App() {
         setStatus('Fehler: ' + e.message);
       }
     } finally {
+      AudioConverter.stopTranscriptionService().catch(() => {});
       if (wavPath) {
         RNFS.unlink(wavPath).catch(() => {});
       }

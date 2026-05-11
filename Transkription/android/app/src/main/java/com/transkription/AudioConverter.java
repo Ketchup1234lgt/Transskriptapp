@@ -1,5 +1,6 @@
 package com.transkription;
 
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
@@ -23,6 +24,28 @@ public class AudioConverter extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "AudioConverter";
+    }
+
+    @ReactMethod
+    public void startTranscriptionService(Promise promise) {
+        try {
+            Intent intent = new Intent(getReactApplicationContext(), TranscriptionService.class);
+            getReactApplicationContext().startForegroundService(intent);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("SERVICE_ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void stopTranscriptionService(Promise promise) {
+        try {
+            Intent intent = new Intent(getReactApplicationContext(), TranscriptionService.class);
+            getReactApplicationContext().stopService(intent);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("SERVICE_ERROR", e.getMessage());
+        }
     }
 
     @ReactMethod
