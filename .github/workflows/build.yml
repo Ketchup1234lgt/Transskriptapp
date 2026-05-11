@@ -41,7 +41,7 @@ jobs:
       - name: Pakete installieren
         run: |
           cd Transkription
-          npm install whisper.rn@0.5.5 react-native-document-picker react-native-fs --legacy-peer-deps
+          npm install whisper.rn@0.5.5 react-native-document-picker@9.3.1 react-native-fs@2.20.0 --legacy-peer-deps
 
       - name: App-Code schreiben
         run: |
