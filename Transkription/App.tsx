@@ -4,6 +4,7 @@ import {
   ActivityIndicator, StyleSheet, Alert, PermissionsAndroid,
 } from 'react-native';
 import {initWhisper} from 'whisper.rn';
+import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 
@@ -78,6 +79,7 @@ export default function App() {
 
   const pickAndTranscribe = async () => {
     await requestPermissions();
+    let wavPath: string | null = null;
     try {
       const picked = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.audio, 'audio/*'],
@@ -89,9 +91,19 @@ export default function App() {
 
       setPhase('transcribing');
       setTranscript('');
-      setStatus('Transkribiere...');
+      setStatus('Konvertiere Audio...');
 
-      const {promise} = whisperRef.current.transcribe(filePath, {
+      wavPath = RNFS.CachesDirectoryPath + '/whisper_' + Date.now() + '.wav';
+      const session = await FFmpegKit.execute(
+        `-y -i "${filePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${wavPath}"`,
+      );
+      const rc = await session.getReturnCode();
+      if (!ReturnCode.isSuccess(rc)) {
+        throw new Error('Audio-Konvertierung fehlgeschlagen (Code ' + (await session.getReturnCode()) + ')');
+      }
+
+      setStatus('Transkribiere...');
+      const {promise} = whisperRef.current.transcribe(wavPath, {
         language: 'de',
       });
       const {result} = await promise;
@@ -102,6 +114,10 @@ export default function App() {
       if (!DocumentPicker.isCancel(e)) {
         setPhase('ready');
         setStatus('Fehler: ' + e.message);
+      }
+    } finally {
+      if (wavPath) {
+        RNFS.unlink(wavPath).catch(() => {});
       }
     }
   };
