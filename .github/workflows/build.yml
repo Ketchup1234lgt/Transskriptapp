@@ -34,7 +34,7 @@ jobs:
 
       - name: React Native Projekt erstellen
         run: |
-          npx @react-native-community/cli@latest init Transkription --skip-git-init --skip-install --pm npm --title Transkription
+          npx react-native@0.72.15 init Transkription --skip-git-init --skip-install --npm --title Transkription
           cd Transkription
           npm install --legacy-peer-deps
 
