@@ -91,7 +91,7 @@ export default function App() {
       setTranscript('');
       setStatus('Transkribiere...');
 
-      const {promise} = whisperRef.current.transcribeFile(filePath, {
+      const {promise} = whisperRef.current.transcribe(filePath, {
         language: 'de',
       });
       const {result} = await promise;
