@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView,
-  ActivityIndicator, StyleSheet, Alert, PermissionsAndroid,
+  ActivityIndicator, StyleSheet, Alert, PermissionsAndroid, NativeModules,
 } from 'react-native';
 import {initWhisper} from 'whisper.rn';
-import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
+
+const {AudioConverter} = NativeModules;
 
 const MODEL_URL = 'https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin';
 const MODEL_PATH = RNFS.DocumentDirectoryPath + '/ggml-medium-q5_0.bin';
@@ -94,13 +95,7 @@ export default function App() {
       setStatus('Konvertiere Audio...');
 
       wavPath = RNFS.CachesDirectoryPath + '/whisper_' + Date.now() + '.wav';
-      const session = await FFmpegKit.execute(
-        `-y -i "${filePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${wavPath}"`,
-      );
-      const rc = await session.getReturnCode();
-      if (!ReturnCode.isSuccess(rc)) {
-        throw new Error('Audio-Konvertierung fehlgeschlagen (Code ' + (await session.getReturnCode()) + ')');
-      }
+      await AudioConverter.convertToWav(filePath, wavPath);
 
       setStatus('Transkribiere...');
       const {promise} = whisperRef.current.transcribe(wavPath, {
