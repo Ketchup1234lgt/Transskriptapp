@@ -34,14 +34,14 @@ jobs:
 
       - name: React Native Projekt erstellen
         run: |
-          npx @react-native-community/cli@latest init Transkription --skip-git-init --pm npm --title Transkription
+          npx @react-native-community/cli@latest init Transkription --skip-git-init --skip-install --pm npm --title Transkription
           cd Transkription
           npm install --legacy-peer-deps
 
       - name: Pakete installieren
         run: |
           cd Transkription
-          npm install whisper.rn@latest react-native-document-picker react-native-fs --legacy-peer-deps
+          npm install whisper.rn@1.4.3 react-native-document-picker react-native-fs --legacy-peer-deps
 
       - name: App-Code schreiben
         run: |
